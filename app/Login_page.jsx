@@ -1,9 +1,10 @@
 import { Image, View, Text, TouchableOpacity, ActivityIndicator,Pressable } from "react-native";
 import { useState, useEffect,useContext } from "react";
 import { router } from "expo-router";
-import { db, storage } from "../app/firebase_config";
+import { db, storage, auth } from "../app/firebase_config";
 import { getDocs, collection, addDoc, doc, updateDoc, arrayUnion, query, where } from "firebase/firestore";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import * as ImagePicker from "expo-image-picker";
 import * as ImageManipulator from "expo-image-manipulator";
 import { Picker } from "@react-native-picker/picker";
@@ -19,6 +20,7 @@ import { ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 
 
 export default function LoginPage() {
+  const [email, setEmail] = useState("");
   const [mobNum, setMobNum] = useState("");
   const [passWord, setPassWord] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -96,25 +98,31 @@ export default function LoginPage() {
 
   const handleSubmit = async () => {
     const normalizedMob = normalizeNumber(mobNum);
-    if (!normalizedMob || !passWord.trim()) return alert("Mobile number and password are required");
-    if (!isValidPhone(mobNum)){
-      setMobNum("");
-       return alert("Enter a valid Indian mobile number");
+    if (!email.trim() || !passWord.trim()) return alert("Email and password are required");
+    
+    if (typeOfUser === "Make New Account") {
+      if (!normalizedMob) return alert("Mobile number is required");
+      if (!isValidPhone(mobNum)){
+        setMobNum("");
+        return alert("Enter a valid Indian mobile number");
       }
-    if (typeOfUser === "Make New Account" && passWord !== confirmPassword) return alert("Passwords do not match");
+      if (passWord !== confirmPassword) return alert("Passwords do not match");
+    }
 
     setIsSubmitting(true);
     try {
       if (typeOfUser === "Login") {
-        const vendor = totalVendors.find(
-          (v) => normalizeNumber(v.contact) === normalizedMob && v.password === passWord
-        );
-        if (vendor) {
-          await login(vendor); 
-          router.replace(`/vndor_cardlog/${vendor.id}`);
-          setMobNum(""); setPassWord("");
+        const userCredential = await signInWithEmailAndPassword(auth, email, passWord);
+        const q = query(collection(db, "vendors"), where("email", "==", email));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+          const vendorDoc = querySnapshot.docs[0];
+          const vendorData = { id: vendorDoc.id, ...vendorDoc.data() };
+          await login(vendorData);
+          router.replace(`/vndor_cardlog/${vendorDoc.id}`);
+          setEmail(""); setPassWord(""); setMobNum("");
         } else {
-          alert("Invalid Mobile Number or Password");
+          alert("Vendor profile not found.");
         }
       } else {
         const q = query(collection(db, "vendors"), where("contact", "==", normalizedMob));
@@ -165,9 +173,11 @@ export default function LoginPage() {
 
         const { downloadURL, filePath } = await uploadImageToFirebase(imageUri);
 
+        const userCredential = await createUserWithEmailAndPassword(auth, email, passWord);
+
         const newVendorRef = await addDoc(collection(db, "vendors"), {
+          email: email,
           contact: normalizedMob,
-          password: passWord,
           shopName: "",
           description: "",
           imageurl: downloadURL,
@@ -187,13 +197,14 @@ export default function LoginPage() {
         }
         
 
-        await login({ id: newVendorRef.id, contact: normalizedMob }); 
+        await login({ id: newVendorRef.id, contact: normalizedMob, email: email }); 
 
          router.replace(`/vndor_cardlog/${newVendorRef.id}`);
 
 
         alert("Account created successfully! Wait for admin approval.");
 
+        setEmail("");
         setMobNum("");
         setPassWord("");
         setConfirmPassword("");
@@ -215,6 +226,7 @@ export default function LoginPage() {
     setTypeOfUser("Make New Account");
     setAuthButtonText("Sign Up");
     setToggleToSignUpText("");
+    setEmail("");
     setMobNum("");
     setPassWord("");
     setConfirmPassword("");
@@ -289,11 +301,20 @@ export default function LoginPage() {
             </Heading>
 
             <VStack space="xs">
-              <Text className="text-sm text-gray-600 mb-1">Whatsapp No.</Text>
+              <Text className="text-sm text-gray-600 mb-1">Email</Text>
               <Input>
-                <InputField type="text" value={mobNum} onChangeText={setMobNum} />
+                <InputField type="email" value={email} onChangeText={setEmail} autoCapitalize="none" keyboardType="email-address" />
               </Input>
             </VStack>
+
+            {typeOfUser === "Make New Account" && (
+              <VStack space="xs">
+                <Text className="text-sm text-gray-600 mb-1">Whatsapp No.</Text>
+                <Input>
+                  <InputField type="text" value={mobNum} onChangeText={setMobNum} />
+                </Input>
+              </VStack>
+            )}
 
             <VStack space="xs">
               <Text className="text-sm text-gray-600 mb-1">Password</Text>

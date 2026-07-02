@@ -1,4 +1,4 @@
-import { Platform, View, Text, Keyboard, FlatList, SectionList, Pressable ,Image, RefreshControl } from 'react-native';
+import { Platform, View, Text, Keyboard, FlatList, SectionList, Pressable ,Image, RefreshControl, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useState, useEffect, useMemo, useRef } from 'react';
@@ -7,8 +7,9 @@ import { Input, InputField, InputIcon, InputSlot } from '@/components/ui/input';
 import { SearchIcon, CloseIcon, MenuIcon } from '@/components/ui/icon';
 import { db } from "../app/firebase_config";
 import { getDocs, collection } from "firebase/firestore";
-import { Menu, MenuItem, MenuItemLabel, MenuSeparator } from '@/components/ui/menu';
+import * as Location from 'expo-location';
 import SidebarMenu from './Sidebar'
+
 function HomeSearch() {
   const [query, setQuery] = useState('');
   const [filterData, setFilterData] = useState([]);
@@ -64,6 +65,17 @@ function HomeSearch() {
     } catch (e) {
       console.error('Failed to save favorite', e);
     }
+  };
+
+  const handleFindNearby = async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Permission to access location was denied');
+      return;
+    }
+
+    let location = await Location.getCurrentPositionAsync({});
+    alert(`GPS Location found! Lat: ${location.coords.latitude.toFixed(2)}, Lon: ${location.coords.longitude.toFixed(2)}. (Integration with station coordinates pending)`);
   };
 
   const handleInputChange = (text) => {
@@ -188,6 +200,12 @@ function HomeSearch() {
       
       {query.trim().length === 0 && (
         <>
+          <TouchableOpacity 
+            className="bg-green-500 mx-4 p-3 rounded-lg mt-4 mb-2 flex-row justify-center items-center"
+            onPress={handleFindNearby}
+          >
+            <Text className="text-white font-bold text-center text-lg mr-2">📍 Find Nearby Stations</Text>
+          </TouchableOpacity>
           <SectionList
             ref={sectionListRef}
             sections={groupedStations}
