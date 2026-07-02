@@ -1,0 +1,29 @@
+{
+    "project_info": {
+      "project_number": "867584998023",
+      "project_id": "railmahaprasadam",
+      "storage_bucket": "railmahaprasadam.firebasestorage.app"
+    },
+    "client": [
+      {
+        "client_info": {
+          "mobilesdk_app_id": "1:867584998023:android:633f1afad55637f2aa5622",
+          "android_client_info": {
+            "package_name": "host.exp.exponent"
+          }
+        },
+        "oauth_client": [],
+        "api_key": [
+          {
+            "current_key": "AIzaSyCRL5kaZxYg_JztFXrg4BPq8mFCSGW4jDs"
+          }
+        ],
+        "services": {
+          "appinvite_service": {
+            "other_platform_oauth_client": []
+          }
+        }
+      }
+    ],
+    "configuration_version": "1"
+  }

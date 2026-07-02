@@ -1,0 +1,60 @@
+
+/*import { db } from '../app/firebase_config';
+import { collection, addDoc } from "firebase/firestore";
+import {useEffect, useState} from 'react'
+
+
+const uploadVendorsData = async () => {
+  try {
+    for (const vendor of vendorData) { // Ensure the correct variable name
+      // Add document with auto-generated ID
+      const docRef = await addDoc(collection(db, 'vendors'), {
+        name: vendor.name,
+        contact: vendor.contact,
+        address: vendor.address, 
+        description: vendor.description,
+        menu: vendor.menu,
+      });
+      console.log(`Document added with ID: ${docRef.id}`);
+    }
+    console.log("All data uploaded successfully!");
+  } catch (error) {
+    console.error("Error uploading station data:", error);
+  }
+
+  useEffect(() => {
+    const uploadData= async() =>{
+        await uploadVendorsData();
+    };
+    uploadData();
+   
+  }, []);
+};
+export default uploadVendorsData;
+
+
+const uploadStationsData = async () => {
+  try {
+    for (const station of stationData) { // Ensure the correct variable name
+      // Add document with auto-generated ID
+      const docRef = await addDoc(collection(db, "stations"), {
+        name: station.name,
+        vendors_list: station.Vendors_list,
+      });
+      console.log(`Document added with ID: ${docRef.id}`);
+    }
+    console.log("All data uploaded successfully!");
+  } catch (error) {
+    console.error("Error uploading station data:", error);
+  }
+};
+
+useEffect(() => {
+    const uploadData= async() =>{
+        await uploadStationsData();
+    };
+    uploadData();
+   
+  }, []);*/
+
+

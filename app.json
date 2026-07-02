@@ -1,0 +1,64 @@
+{
+  "expo": {
+    "name": "Mahaprasade-Govinde",
+    "slug": "mahaprasade-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/logo.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/logo.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "host.exp.exponent",
+      "googleServicesFile": "./google-services.json"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/logo.png",
+      "notification": {
+        "vapidPublicKey": "BNCQwMFUY8hwKwNDCvfeskhv-yYTKC6gXoYw-UgA8KQ_rl7cFd0K9yN_ILl_ws3izJ5ZJxaE_Sk48YaCTS-ejW4",
+        "serviceWorkerPath": "expo-notifications-sw.js"
+      }
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/images/krsna-the-cowheard-boys-taking-prasadam3.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logo.png",
+          "color": "#ffffff"
+        }
+      ],
+      "expo-font",
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "4e9382ac-6e7f-4ea5-83fe-1023b5c84316"
+      }
+    }
+  }
+}
